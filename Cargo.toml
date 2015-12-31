@@ -1,0 +1,16 @@
+[package]
+
+name = "keyboard"
+version = "0.1.0"
+authors = [ "chris@indefini.org" ]
+
+[[bin]]
+
+name = "keyboard"
+
+[dependencies.elementary-sys]
+path = "elementary-sys"
+
+[dependencies]
+#libc = "0.1"
+libc = "*"
