@@ -1,12 +1,11 @@
 [package]
-
-name = "keyboard"
+name = "read"
 version = "0.1.0"
 authors = [ "chris@indefini.org" ]
 
 [[bin]]
 
-name = "keyboard"
+name = "read"
 
 [dependencies.elementary-sys]
 path = "elementary-sys"

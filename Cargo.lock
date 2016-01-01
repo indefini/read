@@ -1,5 +1,5 @@
 [root]
-name = "keyboard"
+name = "read"
 version = "0.1.0"
 dependencies = [
  "elementary-sys 0.1.0",

@@ -12,7 +12,7 @@ fn main() {
     unsafe { elm::init() };
 
     let win = unsafe {elm::window_new()};
-    let (dpix, dpiy, w, h) = elm::get_dpi_size(win);
+    unsafe {elm::ui_create(win)};
 
     unsafe {
         elm::run();
