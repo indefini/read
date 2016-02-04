@@ -24,7 +24,7 @@ impl Folder
     {
         Folder {
             files : get_files_in_dir(path),
-            index : 55
+            index : 0
         }
     }
 
@@ -32,6 +32,32 @@ impl Folder
     {
         if !self.files.is_empty() {
             Some(CString::new(self.files[0].to_str().unwrap()).unwrap())
+        }
+        else {
+            None
+        }
+    }
+
+    pub fn next(&mut self) -> Option<CString>
+    {
+        if let Some(n) = self.files.get(self.index + 1) {
+            self.index = self.index + 1;
+            Some(CString::new(n.to_str().unwrap()).unwrap())
+        }
+        else {
+            None
+        }
+    }
+
+    pub fn previous(&mut self) -> Option<CString>
+    {
+        if self.index == 0 {
+            return None;
+        }
+
+        if let Some(n) = self.files.get(self.index - 1) {
+            self.index = self.index - 1;
+            Some(CString::new(n.to_str().unwrap()).unwrap())
         }
         else {
             None
@@ -114,14 +140,24 @@ pub fn print_vec_cstring(v : Vec<CString>)
 
 pub extern fn next_page(folder : *mut c_void)// Folder)
 {
-    let folder : &Folder = unsafe {mem::transmute(folder)};
-    println!("folder: {}", folder.index);
+    let folder : &mut Folder = unsafe {mem::transmute(folder)};
+    println!("next: {}", folder.index);
+
+    if let Some(s) = folder.next() {
+        unsafe { elm::show_image(s.as_ptr()); }
+    }
+
 }
 
 pub extern fn previous_page(folder : *mut c_void) //Folder)
 {
-    let folder : &Folder = unsafe {mem::transmute(folder)};
-    println!("folder: {}", folder.index);
+    let folder : &mut Folder = unsafe {mem::transmute(folder)};
+    println!("previous: {}", folder.index);
+
+    if let Some(s) = folder.previous() {
+        unsafe { elm::show_image(s.as_ptr()); }
+    }
+
 }
 
 
