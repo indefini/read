@@ -31,5 +31,15 @@ extern "C" {
     pub fn ecore_animator_add(cb : AnimCb, data :*const c_void) -> *const Ecore_Animator;
     pub fn ecore_animator_del(animator : *const Ecore_Animator);
     pub fn show_image(path : *const c_char);
+    pub fn _slideshow_create(
+        win : *const Evas_Object,
+        folder : *const c_void,
+        previous : RustCb,
+        next : RustCb
+        ) -> *const Evas_Object;
+
+    pub fn image_add(
+        slideshow : *const Evas_Object,
+        path : *const c_char);
 }
 

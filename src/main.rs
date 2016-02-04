@@ -80,15 +80,32 @@ fn main() {
 
     let win = unsafe {elm::window_new()};
     unsafe {
+        /*
         elm::ui_create(
             win,
             mem::transmute(&folder),
             previous_page,
             next_page)}
+            */
 
+        let sl = elm::_slideshow_create(
+            win,
+            mem::transmute(&folder),
+            previous_page,
+            next_page);
+
+        for img in &folder.files
+        {
+            let s = CString::new(img.to_str().unwrap()).unwrap();
+            elm::image_add(sl, s.as_ptr());
+        }
+}
+
+/*
     if let Some(s) = folder.get_first() {
         unsafe { elm::show_image(s.as_ptr()); }
     }
+    */
 
     unsafe {
         elm::run();
