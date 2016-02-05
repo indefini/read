@@ -88,6 +88,11 @@ fn main() {
         if let Some(s) = folder.get_first() {
             unsafe { elm::show_image(s.as_ptr()); }
         }
+        for img in &folder.files
+        {
+            let s = CString::new(img.to_str().unwrap()).unwrap();
+            elm::image_add(ptr::null(), s.as_ptr());
+        }
     }
 
 /*

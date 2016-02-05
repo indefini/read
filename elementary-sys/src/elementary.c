@@ -63,6 +63,7 @@ rust_cb _next;
 void* _data;
 Eo* _win;
 Eo* _slide;
+Eo* _box;
 
 
 /* START - Callbacks for gestures */
@@ -86,11 +87,16 @@ n_finger_tap_end(void *data , void *event_info)
    evas_object_geometry_get(_win, &x, &y, &w, &h);
    printf("x = %d, w = <%d>\n", p->x, w);
    if (p->x > w/2) {
-     _next(_data);
+     //_next(_data);
      //elm_slideshow_next(_slide);
+     
+     if (_images) {
+       image_next2(_images);
+     }
    }
    else {
-     _previous(_data);
+     //_previous(_data);
+       image_previous2(_images);
      //elm_slideshow_previous(_slide);
    }
 
@@ -253,6 +259,7 @@ void _create_rect(Evas_Object* win)
 
 }
 
+Eo* _table;
 void ui_create(Evas_Object* win, void* data, rust_cb previous, rust_cb next)
 {
   _previous = previous;
@@ -267,9 +274,20 @@ void ui_create(Evas_Object* win, void* data, rust_cb previous, rust_cb next)
   evas_object_show(box);
   evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_win_resize_object_add(win, box);
+  _box = box;
 
+  Eo* table = elm_table_add(win);
+  evas_object_show(table);
+  elm_table_homogeneous_set(table, EINA_TRUE);
+  evas_object_size_hint_weight_set(table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(table, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_win_resize_object_add(win, table);
+
+  _table = table;
+
+  /*
   img = elm_image_add(win);
-  _images->current;
+  _images->current = img;
   //const char* path = "/home/chris/tmp/08/001.jpg";
   //elm_image_file_set(img, path, NULL);
   evas_object_size_hint_weight_set(img, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -277,6 +295,7 @@ void ui_create(Evas_Object* win, void* data, rust_cb previous, rust_cb next)
 
   elm_box_pack_end(box, img);
   evas_object_show(img);
+  */
 
   _create_rect(win);
 }
@@ -327,24 +346,20 @@ Eo* _slideshow_create(Evas_Object* win, void* data, rust_cb previous, rust_cb ne
   return slideshow;
 }
 
-void image_add(Eo* slideshow, const char* path)
-{
-  if (slideshow) {
-    Elm_Object_Item* item = 
-     elm_slideshow_item_add(slideshow, &itc, strdup(path));
-  }
-
-
-  if (!_images) return;
-
-}
-
 Eo* _create_image(Eo* win, const char* path)
 {
   Eo* im = elm_image_add(win);
-  elm_image_file_set(_images->current, path, NULL);
-  evas_object_size_hint_weight_set(img, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_size_hint_align_set(img, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_image_file_set(im, path, NULL);
+  evas_object_size_hint_weight_set(im, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(im, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  elm_win_resize_object_add(win, im);
+
+  elm_table_pack(_table, im, 0, 0, 1, 1);
+  evas_object_lower(im);
+
+  //elm_box_pack_end(_box, im);
+  //evas_object_show(im);
   
   return im;
 }
@@ -352,6 +367,8 @@ Eo* _create_image(Eo* win, const char* path)
 void image_add2(Images* images, const char* path)
 {
   uint count = eina_list_count(images->after);
+
+  printf("add2 %s, %d\n",path, count);
 
   if (count > 2) {
     images->after_str = 
@@ -365,49 +382,86 @@ void image_add2(Images* images, const char* path)
   if (!_images->current) {
     _images->current = im;
     evas_object_show(im);
+    printf("showing image : %s\n", path);
   }
   else {
     images->after = eina_list_append(images->after, im);
   }
 }
 
-void image_next2(Images* images)
+void _image_move(
+      Images* images,
+      Eina_List** b_str,
+      Eina_List** b_img,
+      Eina_List** a_str,
+      Eina_List** a_img)
 {
-  uint count = eina_list_count(images->after);
+  uint count = eina_list_count(*a_img);
+
+  printf("came here %d\n", count);
 
   if (count == 0) return;
 
-  uint countbefore = eina_list_count(images->before);
+  uint countbefore = eina_list_count(*b_img);
 
   if (countbefore > 2) {
     const char* dance;
     const char* group;
-    Eo* im = eina_list_data_get(images->before);
+    Eo* im = eina_list_data_get(*b_img);
     elm_image_file_get(im, &dance, &group);
-    images->before_str = 
-     eina_list_append(images->before_str, strdup(dance));
+    *b_str = eina_list_append(*b_str, strdup(dance));
 
-    images->before = eina_list_next(images->before);
+    //b_img = eina_list_next(b_img);
+    *b_img = eina_list_remove_list(*b_img, *b_img);
 
     evas_object_del(im);
   }
 
-  images->before = eina_list_append(images->before, images->current);
+  evas_object_hide(images->current);
+  *b_img = eina_list_append(*b_img, images->current);
 
-  uint countafterstr = eina_list_count(images->after_str);
+  uint countafterstr = eina_list_count(*a_str);
 
-  images->current = eina_list_data_get(images->after);
+  images->current = eina_list_data_get(*a_img);
+  evas_object_show(images->current);
 
-  images->after = eina_list_next(images->after);
+  //a_img = eina_list_next(a_img);
+  *a_img = eina_list_remove_list(*a_img, *a_img);
+  printf("yooo : %d, %d \n", eina_list_count(*a_str), eina_list_count(images->after_str));
+  printf("yooo img : %d, %d \n", eina_list_count(*a_img), eina_list_count(images->after));
 
   if (countafterstr > 0) {
-    const char* path = eina_list_data_get(images->after_str);
+    const char* path = eina_list_data_get(*a_str);
     Eo* im = _create_image(images->win, path);
-    images->after = eina_list_append(images->after, im);
-    images->after_str = 
-     eina_list_next(images->after_str);
+    *a_img = eina_list_append(*a_img, im);
+    //a_str = eina_list_next(a_str);
+    *a_str = eina_list_remove_list(*a_str, *a_str);
   }
 }
+
+
+void image_next2(
+      Images* images)
+{
+  _image_move(images, 
+        &images->before_str,
+        &images->before,
+        &images->after_str,
+        &images->after);
+}
+
+void image_previous2(
+      Images* images)
+{
+  _image_move(images,
+        &images->after_str,
+        &images->after,
+        &images->before_str,
+        &images->before);
+}
+
+
+
 
 void image_clear(Eo* slideshow)
 {
@@ -420,5 +474,17 @@ void show_image(const char* path)
 {
   printf("show image : %s \n ", path);
   elm_image_file_set(img, strdup(path), NULL);
+}
+
+void image_add(Eo* slideshow, const char* path)
+{
+  if (slideshow) {
+    Elm_Object_Item* item = 
+     elm_slideshow_item_add(slideshow, &itc, strdup(path));
+  }
+
+  printf("images add %p \n", _images);
+  if (!_images) return;
+  image_add2(_images, path);
 }
 
