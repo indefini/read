@@ -42,6 +42,7 @@ Evas_Object* window_new()
   return win;
 }
 
+Eo* img;
 void ui_create(Evas_Object* win)
 {
     Eo* box = elm_box_add(win);
@@ -49,7 +50,7 @@ void ui_create(Evas_Object* win)
     evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     elm_win_resize_object_add(win, box);
 
-    Eo* img = elm_image_add(win);
+    img = elm_image_add(win);
     const char* path = "/home/chris/tmp/08/001.jpg";
     elm_image_file_set(img, path, NULL);
     evas_object_size_hint_weight_set(img, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -57,4 +58,9 @@ void ui_create(Evas_Object* win)
 
     elm_box_pack_end(box, img);
     evas_object_show(img);
+}
+
+void show_image(const char* path)
+{
+    elm_image_file_set(img, path, NULL);
 }

@@ -1,6 +1,6 @@
 extern crate libc;
 
-use libc::{c_void, c_int, c_char, c_float};//, c_ulong, c_long, c_uint, c_uchar, size_t};
+use libc::{c_void, c_int, size_t, c_char};//, c_ulong, c_long, c_uint, c_uchar};
 
 pub type AnimCb = extern fn(data : *mut c_void) -> bool;
 pub type RustCb = extern fn(data : *mut c_void);
@@ -25,5 +25,6 @@ extern "C" {
 
     pub fn ecore_animator_add(cb : AnimCb, data :*const c_void) -> *const Ecore_Animator;
     pub fn ecore_animator_del(animator : *const Ecore_Animator);
+    pub fn show_image(path : *const c_char);
 }
 
