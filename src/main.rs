@@ -11,13 +11,58 @@ use std::fs;
 
 use std::ffi::{CString, CStr};
 use std::str;
+use std::env;
 
+struct Folder {
+  files :  Vec<PathBuf>,
+  index : usize
+}
+
+impl Folder 
+{
+    pub fn new(path : &Path) -> Self
+    {
+        Folder {
+            files : get_files_in_dir(path),
+            index : 55
+        }
+    }
+
+    pub fn get_first(&self) -> Option<CString>
+    {
+        if !self.files.is_empty() {
+            Some(CString::new(self.files[0].to_str().unwrap()).unwrap())
+        }
+        else {
+            None
+        }
+    }
+}
 
 fn main() {
     unsafe { elm::init() };
+    let mut args = env::args();
+    let path = if let Some(p) = args.nth(1) {
+        PathBuf::from(p)
+    }
+    else {
+        env::current_dir().unwrap()
+    };
+
+    println!("argument : {:?}", path);
+    let folder = Folder::new(path.as_ref());
 
     let win = unsafe {elm::window_new()};
-    unsafe {elm::ui_create(win)};
+    unsafe {
+        elm::ui_create(
+            win,
+            mem::transmute(&folder),
+            previous_page,
+            next_page)}
+
+    if let Some(s) = folder.get_first() {
+        unsafe { elm::show_image(s.as_ptr()); }
+    }
 
     unsafe {
         elm::run();
@@ -34,7 +79,7 @@ extern fn close(data : *mut c_void) {
     unsafe { elm::kexit() };
 }
 
-pub fn get_files_in_dir(path : &str) -> Vec<PathBuf>
+pub fn get_files_in_dir(path : &Path) -> Vec<PathBuf>
 {
     let files = fs::read_dir(path).unwrap();
     /*
@@ -66,5 +111,18 @@ pub fn print_vec_cstring(v : Vec<CString>)
             y.len() as size_t); }
 }
 */
+
+pub extern fn next_page(folder : *mut c_void)// Folder)
+{
+    let folder : &Folder = unsafe {mem::transmute(folder)};
+    println!("folder: {}", folder.index);
+}
+
+pub extern fn previous_page(folder : *mut c_void) //Folder)
+{
+    let folder : &Folder = unsafe {mem::transmute(folder)};
+    println!("folder: {}", folder.index);
+}
+
 
 

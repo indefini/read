@@ -21,7 +21,12 @@ extern "C" {
     pub fn reduce();
 
     pub fn window_new() -> *const Evas_Object;
-    pub fn ui_create(win : *const Evas_Object);
+    pub fn ui_create(
+        win : *const Evas_Object,
+        folder : *const c_void,
+        previous : RustCb,
+        next : RustCb
+        );
 
     pub fn ecore_animator_add(cb : AnimCb, data :*const c_void) -> *const Ecore_Animator;
     pub fn ecore_animator_del(animator : *const Ecore_Animator);
