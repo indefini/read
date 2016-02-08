@@ -112,8 +112,11 @@ void ui_create(Evas_Object* win, void* data, rust_cb previous, rust_cb next)
 
   Eo* r = evas_object_rectangle_add(evas_object_evas_get(win));
   evas_object_move(r, 0, 0);
+  //evas_object_color_set(r, 100, 0, 0, 100);
   evas_object_color_set(r, 0, 0, 0, 0);
   elm_win_resize_object_add(win, r);
+  evas_object_size_hint_weight_set(r, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(r, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
   Eo* g = elm_gesture_layer_add(win);
   elm_gesture_layer_attach(g, r);
@@ -140,6 +143,17 @@ void ui_create(Evas_Object* win, void* data, rust_cb previous, rust_cb next)
   elm_gesture_layer_cb_set(gl, ELM_GESTURE_ZOOM, ELM_GESTURE_STATE_END, zoom_end, po);
   elm_gesture_layer_cb_set(gl, ELM_GESTURE_ZOOM, ELM_GESTURE_STATE_ABORT, zoom_end, po);
   */
+}
+
+void _slideshow_create(Eo* win)
+{
+  Eo* slideshow = elm_slideshow_add(win);
+
+  evas_object_size_hint_weight_set(slideshow, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(slideshow, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //evas_object_smart_callback_add(slideshow, "changed", _changed_cb, NULL);
+  elm_win_resize_object_add(win, slideshow);
+  evas_object_show(slideshow);
 }
 
 void show_image(const char* path)
