@@ -179,6 +179,8 @@ Eo* _slideshow_create(Evas_Object* win, void* data, rust_cb previous, rust_cb ne
   Eo* slideshow = elm_slideshow_add(win);
   _slide = slideshow;
   elm_slideshow_loop_set(slideshow, EINA_TRUE);
+  elm_slideshow_transition_set(slideshow, "None");
+
 
   evas_object_size_hint_weight_set(slideshow, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(slideshow, EVAS_HINT_FILL, EVAS_HINT_FILL);
