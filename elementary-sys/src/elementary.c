@@ -398,8 +398,6 @@ void _image_move(
 {
   uint count = eina_list_count(*a_img);
 
-  printf("came here %d\n", count);
-
   if (count == 0) return;
 
   uint countbefore = eina_list_count(*b_img);
@@ -407,34 +405,29 @@ void _image_move(
   if (countbefore > 2) {
     const char* dance;
     const char* group;
-    Eo* im = eina_list_data_get(*b_img);
+    Eo* im = eina_list_last_data_get(*b_img);
     elm_image_file_get(im, &dance, &group);
-    *b_str = eina_list_append(*b_str, strdup(dance));
-
-    //b_img = eina_list_next(b_img);
-    *b_img = eina_list_remove_list(*b_img, *b_img);
+    *b_str = eina_list_prepend(*b_str, strdup(dance));
+    
+    *b_img = eina_list_remove_list(*b_img, eina_list_last(*b_img));
 
     evas_object_del(im);
   }
 
   evas_object_hide(images->current);
-  *b_img = eina_list_append(*b_img, images->current);
+  *b_img = eina_list_prepend(*b_img, images->current);
 
   uint countafterstr = eina_list_count(*a_str);
 
   images->current = eina_list_data_get(*a_img);
   evas_object_show(images->current);
 
-  //a_img = eina_list_next(a_img);
   *a_img = eina_list_remove_list(*a_img, *a_img);
-  printf("yooo : %d, %d \n", eina_list_count(*a_str), eina_list_count(images->after_str));
-  printf("yooo img : %d, %d \n", eina_list_count(*a_img), eina_list_count(images->after));
 
   if (countafterstr > 0) {
     const char* path = eina_list_data_get(*a_str);
     Eo* im = _create_image(images->win, path);
     *a_img = eina_list_append(*a_img, im);
-    //a_str = eina_list_next(a_str);
     *a_str = eina_list_remove_list(*a_str, *a_str);
   }
 }
