@@ -46,7 +46,7 @@ Evas_Object* window_new()
 struct _Images
 {
   Eina_List* before_str;
-  Eina_List* before_img;
+  Eina_List* before;
   Eo* current;
   Eina_List* after;
   Eina_List* after_str;
@@ -56,7 +56,7 @@ struct _Images
 typedef struct _Images Images;
 
 
-Eo* _images;
+Images* _images;
 Eo* img;
 rust_cb _previous;
 rust_cb _next;
@@ -351,7 +351,7 @@ Eo* _create_image(Eo* win, const char* path)
 
 void image_add2(Images* images, const char* path)
 {
-  usize count = eina_list_count(images->after);
+  uint count = eina_list_count(images->after);
 
   if (count > 2) {
     images->after_str = 
@@ -373,11 +373,11 @@ void image_add2(Images* images, const char* path)
 
 void image_next2(Images* images)
 {
-  usize count = eina_list_count(images->after);
+  uint count = eina_list_count(images->after);
 
   if (count == 0) return;
 
-  usize countbefore = eina_list_count(images->before);
+  uint countbefore = eina_list_count(images->before);
 
   if (countbefore > 2) {
     const char* dance;
@@ -394,7 +394,7 @@ void image_next2(Images* images)
 
   images->before = eina_list_append(images->before, images->current);
 
-  usize countafterstr = eina_list_count(images->after_str);
+  uint countafterstr = eina_list_count(images->after_str);
 
   images->current = eina_list_data_get(images->after);
 
