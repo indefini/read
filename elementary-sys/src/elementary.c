@@ -178,10 +178,12 @@ flick_end(void *data , void *event_info)
    if (p->momentum.mx < 0) {
      _next(_data);
      elm_slideshow_next(_slide);
+     image_next2(_images);
    }
    else {
      _previous(_data);
      elm_slideshow_previous(_slide);
+       image_previous2(_images);
    }
 
 
