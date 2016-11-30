@@ -22,8 +22,11 @@ impl Folder
 {
     pub fn new(path : &Path) -> Self
     {
+        let mut files = get_files_in_dir(path);
+        files.sort();
+
         Folder {
-            files : get_files_in_dir(path),
+            files : files,
             index : 0
         }
     }
