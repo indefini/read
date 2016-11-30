@@ -96,6 +96,7 @@ fn main() {
 
         for img in &folder.files
         {
+            println!("do this : {}", img.to_str().unwrap());
             let s = CString::new(img.to_str().unwrap()).unwrap();
             elm::image_add(sl, s.as_ptr());
         }

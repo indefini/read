@@ -198,8 +198,9 @@ Eo* _slideshow_create(Evas_Object* win, void* data, rust_cb previous, rust_cb ne
 
 void image_add(Eo* slideshow, const char* path)
 {
+  printf("image add : %s \n", path);
   Elm_Object_Item* item = 
-   elm_slideshow_item_add(slideshow, &itc, path);
+   elm_slideshow_item_add(slideshow, &itc, eina_stringshare_add(path));
 }
 
 void image_clear(Eo* slideshow)
